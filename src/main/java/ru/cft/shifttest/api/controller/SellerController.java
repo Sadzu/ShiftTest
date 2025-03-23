@@ -48,4 +48,14 @@ public class SellerController {
     public List<SellerInfoDto> getSellersLessThanCost(@PathVariable Integer cost, @RequestParam(required = false) String period) {
         return sellerService.getSellersLessThanCost(cost, period);
     }
+
+    @GetMapping(SELLERS_COST_PERIOD)
+    public List<SellerInfoDto> getSellersLessThanCost(@PathVariable Integer cost, @RequestParam(required = false) String begin, @RequestParam(required = false) String end) {
+        return sellerService.getSellersLessThanCost(cost, begin, end);
+    }
+
+    @GetMapping(SELLERS_BEST_PERIOD)
+    public String getBestPeriodOfSeller(@RequestParam(required = true) Integer id, @RequestParam(required = true) String period) {
+        return sellerService.getBestPeriodOfSeller(id, period);
+    }
 }

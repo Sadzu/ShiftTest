@@ -8,8 +8,8 @@ import ru.cft.shifttest.core.entity.Seller;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-10-19T19:51:28+0700",
-    comments = "version: 1.5.5.Final, compiler: IncrementalProcessingEnvironment from gradle-language-java-8.5.jar, environment: Java 21.0.5 (Amazon.com Inc.)"
+    date = "2025-03-22T06:51:18+0700",
+    comments = "version: 1.5.5.Final, compiler: IncrementalProcessingEnvironment from gradle-language-java-8.5.jar, environment: Java 21.0.6 (Amazon.com Inc.)"
 )
 @Component
 public class SellerMapperImpl implements SellerMapper {

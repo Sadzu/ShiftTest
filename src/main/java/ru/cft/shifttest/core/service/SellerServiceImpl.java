@@ -3,6 +3,7 @@ package ru.cft.shifttest.core.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.cft.shifttest.api.dto.seller.BestPeriodDto;
 import ru.cft.shifttest.api.dto.seller.SellerCreatePatchDto;
 import ru.cft.shifttest.api.dto.seller.SellerInfoDto;
 import ru.cft.shifttest.core.entity.Seller;
@@ -133,7 +134,6 @@ public class SellerServiceImpl implements SellerService {
                 period = count + " " + period;
             }
             for (int i = 1; i <= maxId; i++) {
-                log.info("'" + count + " " + period + "'");
                 if (_transactionRepository.getSumAmountBySellerIdWithPeriod(i, period).isPresent()) {
                     int amount = _transactionRepository.getSumAmountBySellerIdWithPeriod(i, period).get();
                     if (amount < cost) {
@@ -152,6 +152,39 @@ public class SellerServiceImpl implements SellerService {
             }
         }
 
+        if (result.isEmpty()) {
+            throw new ServiceException(new ErrorCode(OBJECT_NOT_FOUND), String.format(SELLER_LESS_AMOUNT_NOT_FOUNT, cost));
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<SellerInfoDto> getSellersLessThanCost(Integer cost, String begin, String end) {
+        List<SellerInfoDto> result = new ArrayList<>();
+        Integer maxId = _sellerRepository.getMaxId();
+        if (begin != null && !begin.isEmpty() && end != null && !end.isEmpty()) {
+            if (maxId == 0) {
+                throw new ServiceException(new ErrorCode(INVALID_REQUEST), "No sellers");
+            }
+            for (int i = 1; i <= maxId; i++) {
+                if (_transactionRepository.getSumAmountBySellerIdWithPeriod(i, begin, end).isPresent()) {
+                    int amount = _transactionRepository.getSumAmountBySellerIdWithPeriod(i, begin, end).get();
+                    if (amount < cost) {
+                        result.add(_sellerMapper.map(getByIdOrThrow(i)));
+                    }
+                }
+            }
+        } else {
+            for (int i = 1; i <= maxId; i++) {
+                if (_transactionRepository.getSumAmountBySellerId(i).isPresent()) {
+                    int amount = _transactionRepository.getSumAmountBySellerId(i).get();
+                    if (amount < cost) {
+                        result.add(_sellerMapper.map(getByIdOrThrow(i)));
+                    }
+                }
+            }
+        }
         if (result.isEmpty()) {
             throw new ServiceException(new ErrorCode(OBJECT_NOT_FOUND), String.format(SELLER_LESS_AMOUNT_NOT_FOUNT, cost));
         }
@@ -178,6 +211,29 @@ public class SellerServiceImpl implements SellerService {
         }
         if (!dto.contactInfo().isEmpty()) {
             seller.setContactInfo(dto.contactInfo());
+        }
+    }
+
+    @Override
+    public String getBestPeriodOfSeller(Integer id, String period) {
+        if (period == null || period.isEmpty() || !PERIODS_LIST.contains(period) || period.equals("quarter")) {
+            throw new ServiceException(new ErrorCode(INVALID_REQUEST), "Invalid period: " + period);
+        }
+        log.info(id + " " + period);
+        if (_transactionRepository.getBestPeriodOfSeller(period, id).isPresent()) {
+            String response = _transactionRepository.getBestPeriodOfSeller(period, id).get()[0];
+            if (period.equals("day")) {
+                response = response.split(" ")[0];
+            } else if (period.equals("week")) {
+                response = response.split(" ")[0];
+            } else if (period.equals("month")) {
+                response = response.split(" ")[0].substring(0, 7);
+            } else if (period.equals("year")) {
+                response = response.split(" ")[0].substring(0, 3);
+            }
+            return response;
+        } else {
+            throw new ServiceException(new ErrorCode(OBJECT_NOT_FOUND), String.format("Transactions of seller with id: %d not found", id));
         }
     }
 }

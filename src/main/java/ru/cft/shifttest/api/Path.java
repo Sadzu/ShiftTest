@@ -12,6 +12,8 @@ public final class Path {
     public static final String SELLERS_DELETE_ID = "/sellers/delete/{id}";
     public static final String SELLERS_BEST = "/sellers/best";
     public static final String SELLERS_COST = "/sellers/{cost}";
+    public static final String SELLERS_COST_PERIOD = "/sellers/window/{cost}";
+    public static final String SELLERS_BEST_PERIOD = "/sellers/best_period";
 
     // ----- Transaction -----
     public static final String TRANSACTIONS_CREATE = "/transactions/create";

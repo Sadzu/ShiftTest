@@ -23,4 +23,7 @@ public interface SellerService {
     SellerInfoDto getBestSeller(String period);
 
     List<SellerInfoDto> getSellersLessThanCost(Integer cost, String period);
+    List<SellerInfoDto> getSellersLessThanCost(Integer cost, String begin, String end);
+
+    String getBestPeriodOfSeller(Integer id, String period);
 }
